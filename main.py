@@ -85,14 +85,14 @@ async def analyze_video(request: VideoAnalysisRequest):
         if file_size_mb > Config.MAX_VIDEO_SIZE_MB:
             raise HTTPException(
                 status_code=413,
-                detail=f"Vídeo muito grande: {file_size_mb".1f"}MB. Máximo permitido: {Config.MAX_VIDEO_SIZE_MB}MB"
+                detail=f"Vídeo muito grande: {file_size_mb.format(1)}MB. Máximo permitido: {Config.MAX_VIDEO_SIZE_MB}MB"
             )
 
         # Analisar com Gemini
         logger.info("Analisando vídeo com Gemini...")
         analysis_result = await gemini_analyzer.analyze_video(video_path)
 
-        logger.info(f"Análise concluída. Fraudulento: {analysis_result['is_fraudulent']}, Confiança: {analysis_result['confidence']".2f"}")
+        logger.info(f"Análise concluída. Fraudulento: {analysis_result['is_fraudulent']}, Confiança: {analysis_result['confidence']:.2f}")
 
         return VideoAnalysisResponse(
             is_fraudulent=analysis_result["is_fraudulent"],

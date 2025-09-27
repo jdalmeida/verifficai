@@ -102,7 +102,7 @@ class GeminiAnalyzer:
 
                 # Salvar frame se estiver no intervalo correto
                 if frame_count % frame_interval == 0:
-                    frame_filename = f"frame_{extracted_count"03d"}.jpg"
+                    frame_filename = f"frame_{extracted_count:03d}.jpg"
                     frame_path = os.path.join(temp_dir, frame_filename)
 
                     # Redimensionar frame para análise (otimização)
@@ -276,7 +276,7 @@ class GeminiAnalyzer:
                 analysis += "Análise indica características suspeitas consistentes com conteúdo fraudulento."
         else:
             analysis = f"Análise de {total_frames} frames não detectou indícios significativos de fraude. "
-            analysis += f"Confiança na análise: {final_confidence".2f"}"
+            analysis += f"Confiança na análise: {final_confidence:.2f}"
 
         return {
             "is_fraudulent": is_fraudulent,
