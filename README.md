@@ -4,7 +4,7 @@ API em Python para análise de conteúdo de vídeos do Instagram e detecção de
 
 ## Funcionalidades
 
-- ✅ Download automático de vídeos do Instagram (posts, reels, stories)
+- ✅ Download automático de vídeos do Instagram (posts, reels)
 - ✅ Análise avançada com Google Gemini Vision
 - ✅ Detecção de conteúdo gerado por IA
 - ✅ Identificação de fraudes em anúncios de venda
@@ -123,10 +123,12 @@ A aplicação gera logs em:
 
 ## Limitações
 
-- Requer chave válida da API do Google Gemini
-- Análise limitada a posts públicos do Instagram
-- Processamento pode ser lento para vídeos longos
-- Depende da disponibilidade das APIs externas
+- ⚠️ **Stories não suportadas**: URLs de stories do Instagram não podem ser processadas
+- 🔒 **Apenas posts públicos**: Posts privados não podem ser acessados
+- 🚦 **Rate limiting**: O Instagram pode bloquear acessos frequentes
+- ⏱️ **Processamento lento**: Vídeos longos podem demorar para analisar
+- 🔑 **Requer API key**: Necessária chave válida do Google Gemini
+- 🌐 **Dependência externa**: Funciona apenas quando APIs externas estão disponíveis
 
 ## Desenvolvimento
 

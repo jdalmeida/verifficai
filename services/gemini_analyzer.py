@@ -21,7 +21,9 @@ class GeminiAnalyzer:
             raise ValueError("GEMINI_API_KEY não configurada")
 
         genai.configure(api_key=api_key)
-        self.model = genai.GenerativeModel('gemini-pro-vision')
+        from config import Config
+        # Usar modelo configurado (padrão: gemini-1.5-flash para análise de imagens)
+        self.model = genai.GenerativeModel(Config.GEMINI_MODEL)
 
     async def analyze_video(self, video_path: str) -> Dict[str, Any]:
         """

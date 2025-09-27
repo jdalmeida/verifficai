@@ -20,7 +20,7 @@ class Config:
 
     # Configurações do Gemini
     GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
-    GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-pro-vision")
+    GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-2.0-flash")
 
     # Configurações de logging
     LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO")

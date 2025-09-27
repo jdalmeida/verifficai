@@ -36,6 +36,10 @@ class InstagramDownloader:
             Caminho local do arquivo de vídeo baixado
         """
         try:
+            # Verificar se é uma URL de story (que pode não ser suportada)
+            if '/stories/' in url:
+                raise ValueError("URLs de stories do Instagram não são suportadas. Use apenas posts ou reels.")
+
             # Extrair shortcode da URL
             shortcode = self._extract_shortcode(url)
             if not shortcode:
@@ -57,37 +61,65 @@ class InstagramDownloader:
                 raise ValueError("Post não encontrado ou não é um vídeo")
 
             # Criar diretório temporário para download
-            with tempfile.TemporaryDirectory() as temp_dir:
-                # Configurar diretório de download
-                original_dir = os.getcwd()
-                os.chdir(temp_dir)
+            from config import Config
+            temp_dir = Config.TEMP_DIR
+            os.makedirs(temp_dir, exist_ok=True)
+            # Configurar diretório de download
+            original_dir = os.getcwd()
+            os.chdir(temp_dir)
+
+            try:
+                # Baixar o vídeo
+                self.loader.download_post(post, target="temp")
+
+                # Procurar arquivo de vídeo (incluindo subdiretórios)
+                video_files = []
+                for root, dirs, files in os.walk(temp_dir):
+                    for file in files:
+                        if file.endswith('.mp4'):
+                            video_files.append(os.path.join(root, file))
+
+                if not video_files:
+                    raise ValueError("Vídeo não encontrado no post")
+
+                # Pegar o primeiro arquivo de vídeo (geralmente o principal)
+                temp_video_path = video_files[0]
+
+                logger.info(f"Vídeo encontrado em: {temp_video_path}")
+                logger.info(f"Arquivo existe: {os.path.exists(temp_video_path)}")
+
+                # Copiar para um arquivo temporário mais persistente
+                import shutil
+                import uuid
+                final_video_path = os.path.join(temp_dir, f"video_{shortcode}_{uuid.uuid4().hex[:8]}.mp4")
 
                 try:
-                    # Baixar o vídeo
-                    self.loader.download_post(post, target="temp")
+                    shutil.copy2(temp_video_path, final_video_path)
+                    logger.info(f"Vídeo copiado para: {final_video_path}")
+                    logger.info(f"Arquivo copiado existe: {os.path.exists(final_video_path)}")
+                except Exception as copy_error:
+                    logger.error(f"Erro ao copiar arquivo: {copy_error}")
+                    raise ValueError(f"Erro ao processar vídeo: {copy_error}")
 
-                    # Procurar arquivo de vídeo
-                    video_files = []
-                    for file in os.listdir(temp_dir):
-                        if file.endswith('.mp4'):
-                            video_files.append(file)
+                # Retornar caminho do arquivo copiado
+                return final_video_path
 
-                    if not video_files:
-                        raise ValueError("Vídeo não encontrado no post")
-
-                    # Pegar o primeiro arquivo de vídeo (geralmente o principal)
-                    video_file = video_files[0]
-                    video_path = os.path.join(temp_dir, video_file)
-
-                    # Retornar caminho do arquivo
-                    return video_path
-
-                finally:
-                    os.chdir(original_dir)
+            finally:
+                os.chdir(original_dir)
 
         except Exception as e:
-            logger.error(f"Erro ao baixar vídeo: {str(e)}")
-            raise ValueError(f"Não foi possível baixar o vídeo: {str(e)}")
+            error_msg = str(e)
+            logger.error(f"Erro ao baixar vídeo: {error_msg}")
+
+            # Melhorar mensagens de erro comuns
+            if "403" in error_msg or "Forbidden" in error_msg:
+                error_msg = "Acesso bloqueado pelo Instagram. Tente novamente mais tarde ou use uma VPN."
+            elif "Post metadata failed" in error_msg:
+                error_msg = "Não foi possível acessar os metadados do post. O post pode ser privado ou não existir."
+            elif "not found" in error_msg.lower():
+                error_msg = "Post não encontrado. Verifique se a URL está correta e o post é público."
+
+            raise ValueError(f"Não foi possível baixar o vídeo: {error_msg}")
 
     def _extract_shortcode(self, url: str) -> Optional[str]:
         """
@@ -103,7 +135,8 @@ class InstagramDownloader:
         patterns = [
             r'instagram\.com/p/([a-zA-Z0-9_-]+)',
             r'instagram\.com/reel/([a-zA-Z0-9_-]+)',
-            r'instagram\.com/tv/([a-zA-Z0-9_-]+)'
+            r'instagram\.com/tv/([a-zA-Z0-9_-]+)',
+            r'instagram\.com/stories/[^/]+/([a-zA-Z0-9_-]+)'
         ]
 
         for pattern in patterns:

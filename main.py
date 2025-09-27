@@ -18,6 +18,13 @@ setup_logging()
 # Configurar logger
 logger = logging.getLogger(__name__)
 
+def _is_instagram_url(url: str) -> bool:
+    """Verifica se a URL é do Instagram"""
+    import re
+    # Aceita apenas posts, reels e TV (stories não são suportadas)
+    instagram_pattern = r'https?://(www\.)?instagram\.com/(p|reel|tv)/[a-zA-Z0-9_-]+/?'
+    return bool(re.match(instagram_pattern, url))
+
 # Criar aplicação FastAPI
 app = FastAPI(
     title="VerifficAI - API de Detecção de Fraudes em Vídeos",
@@ -73,7 +80,7 @@ async def analyze_video(request: VideoAnalysisRequest):
 
     try:
         # Validar URL
-        if not request.url or not self._is_instagram_url(request.url):
+        if not request.url or not _is_instagram_url(request.url):
             raise HTTPException(status_code=400, detail="URL do Instagram inválida")
 
         # Baixar vídeo do Instagram
@@ -107,11 +114,6 @@ async def analyze_video(request: VideoAnalysisRequest):
         logger.error(f"Erro durante análise: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Erro interno do servidor: {str(e)}")
 
-    def _is_instagram_url(self, url: str) -> bool:
-        """Verifica se a URL é do Instagram"""
-        import re
-        instagram_pattern = r'https?://(www\.)?instagram\.com/(p|reel|tv)/[a-zA-Z0-9_-]+/?'
-        return bool(re.match(instagram_pattern, url))
 
 @app.get("/health")
 async def health_check():
