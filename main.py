@@ -1,6 +1,6 @@
-/**
- * @author João Gabriel de Almeida
- */
+"""
+@author João Gabriel de Almeida
+"""
 
 from fastapi import FastAPI, HTTPException, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware

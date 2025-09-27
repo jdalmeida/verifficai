@@ -1,6 +1,6 @@
-/**
- * @author João Gabriel de Almeida
- */
+"""
+@author João Gabriel de Almeida
+"""
 
 import instaloader
 import re

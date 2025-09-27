@@ -1,6 +1,6 @@
-/**
- * @author João Gabriel de Almeida
- */
+"""
+@author João Gabriel de Almeida
+"""
 
 import google.generativeai as genai
 import os

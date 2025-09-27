@@ -1,9 +1,5 @@
 FROM python:3.11-slim
 
-/**
- * @author João Gabriel de Almeida
- */
-
 WORKDIR /app
 
 # Instalar dependências do sistema

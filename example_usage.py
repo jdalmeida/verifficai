@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 
-/**
- * @author João Gabriel de Almeida
- */
+"""
+@author João Gabriel de Almeida
+"""
 
 """
 Exemplo de uso da API VerifficAI

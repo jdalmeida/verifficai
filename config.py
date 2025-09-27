@@ -1,6 +1,7 @@
-/**
- * @author João Gabriel de Almeida
- */
+"""
+@author João Gabriel de Almeida
+"""
+
 
 import logging
 import os
